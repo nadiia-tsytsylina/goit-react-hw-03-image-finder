@@ -30,10 +30,10 @@ class App extends Component {
       <div className={css.App}>
         <Searchbar onSubmit={this.handleFormSubmit} />
         <ImageGallery imageName={imageName} />
-        {/* <button type="button" onClick={this.openModal}>
+        <button type="button" onClick={this.openModal}>
           Open modal
         </button>
-        {this.state.showModal && <Modal onClose={this.closeModal}></Modal>} */}
+        {showModal && <Modal onClose={this.closeModal}></Modal>}
         <ToastContainer
           autoClose={2000}
           position="bottom-right"
