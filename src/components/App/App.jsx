@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
+import { ToastContainer } from 'react-toastify';
 import Searchbar from 'components/Searchbar/Searchbar';
+import ImageGallery from 'components/ImageGallery/ImageGallery';
 import Modal from 'components/Modal/Modal';
+
 import css from './App.module.css';
 
 class App extends Component {
   state = {
+    imageName: '',
     showModal: false,
   };
 
@@ -16,18 +20,25 @@ class App extends Component {
     this.setState({ showModal: false });
   };
 
-  onSubmit = () => {
-    console.log('work');
+  handleFormSubmit = imageName => {
+    this.setState({ imageName });
   };
 
   render() {
+    const { imageName, showModal } = this.state;
     return (
       <div className={css.App}>
-        <Searchbar onSubmit={this.onSubmit} />
-        <button type="button" onClick={this.openModal}>
+        <Searchbar onSubmit={this.handleFormSubmit} />
+        <ImageGallery imageName={imageName} />
+        {/* <button type="button" onClick={this.openModal}>
           Open modal
         </button>
-        {this.state.showModal && <Modal onClose={this.closeModal}></Modal>}
+        {this.state.showModal && <Modal onClose={this.closeModal}></Modal>} */}
+        <ToastContainer
+          autoClose={2000}
+          position="bottom-right"
+          theme="colored"
+        />
       </div>
     );
   }
