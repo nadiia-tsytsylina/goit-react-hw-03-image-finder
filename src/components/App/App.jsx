@@ -1,39 +1,70 @@
 import React, { Component } from 'react';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import Searchbar from 'components/Searchbar/Searchbar';
+import Loader from 'components/Loader/Loader';
 import ImageGallery from 'components/ImageGallery/ImageGallery';
-import Modal from 'components/Modal/Modal';
+import Button from 'components/Button/Button';
+import { fetchImages } from 'services/fetchAPI';
 
 import css from './App.module.css';
 
 class App extends Component {
   state = {
     imageName: '',
-    showModal: false,
+    loading: false,
+    images: null,
+    page: 1,
+    totaHits: 0,
+    error: '',
   };
 
-  openModal = () => {
-    this.setState({ showModal: true });
-  };
+  async componentDidUpdate(prevProps, prevState) {
+    const { imageName, page } = this.state;
+    if (prevState.imageName !== imageName || prevState.page !== page) {
+      try {
+        this.setState({ loading: true });
 
-  closeModal = () => {
-    this.setState({ showModal: false });
-  };
+        const { totalHits, hits } = await fetchImages(imageName, page);
+
+        if (totalHits === 0) {
+          this.setState({ totalHits: 0 });
+          toast.error(`There are no images with tag ${imageName}`);
+          this.setState({ loading: false });
+          return;
+        } else {
+          this.setState(prevState => ({
+            images: page === 1 ? hits : [...prevState.images, ...hits],
+            totalHits:
+              page === 1
+                ? totalHits - hits.length
+                : totalHits - [...prevState.images, ...hits].length,
+          }));
+
+          this.setState({ loading: false });
+        }
+      } catch (error) {
+        toast.error(`${error}`);
+      }
+    }
+  }
 
   handleFormSubmit = imageName => {
-    this.setState({ imageName });
+    this.setState({ imageName, page: 1, images: null });
+  };
+
+  handleLoadMore = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
   };
 
   render() {
-    const { imageName, showModal } = this.state;
+    const { loading, images, error, totalHits } = this.state;
     return (
       <div className={css.App}>
         <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery imageName={imageName} />
-        <button type="button" onClick={this.openModal}>
-          Open modal
-        </button>
-        {showModal && <Modal onClose={this.closeModal}></Modal>}
+        {error && <h1>{error}</h1>}
+        {images && <ImageGallery images={images} />}
+        {!!totalHits && <Button onCLick={this.handleLoadMore} />}
+        {loading && <Loader />}
         <ToastContainer
           autoClose={2000}
           position="bottom-right"
@@ -43,5 +74,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;

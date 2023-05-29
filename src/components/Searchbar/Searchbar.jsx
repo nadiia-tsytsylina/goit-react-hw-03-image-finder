@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import { TbPhotoSearch } from 'react-icons/tb';
 import css from './Searchbar.module.css';
-
 import 'react-toastify/dist/ReactToastify.css';
 
 class Searchbar extends Component {
@@ -17,7 +16,7 @@ class Searchbar extends Component {
   handleSubmit = event => {
     event.preventDefault();
     if (this.state.imageName.trim() === '') {
-      toast.error('Please input image name');
+      toast.error('Please input tag for searching images');
       return;
     }
     this.props.onSubmit(this.state.imageName);
