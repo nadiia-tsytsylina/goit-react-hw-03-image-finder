@@ -14,7 +14,7 @@ class App extends Component {
     loading: false,
     images: null,
     page: 1,
-    totaHits: 0,
+    totalHits: 0,
     error: '',
   };
 
