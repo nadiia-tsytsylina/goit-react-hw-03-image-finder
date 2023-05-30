@@ -20,7 +20,11 @@ class App extends Component {
 
   async componentDidUpdate(prevProps, prevState) {
     const { imageName, page } = this.state;
-    if (prevState.imageName !== imageName || prevState.page !== page) {
+    const prevPage = prevState.page;
+    const prevImageName = prevState.imageName;
+    const prevImages = prevState.images;
+
+    if (prevImageName !== imageName || prevPage !== page) {
       try {
         this.setState({ loading: true });
 
@@ -33,11 +37,11 @@ class App extends Component {
           return;
         } else {
           this.setState(prevState => ({
-            images: page === 1 ? hits : [...prevState.images, ...hits],
+            images: page === 1 ? hits : [...prevImages, ...hits],
             totalHits:
               page === 1
                 ? totalHits - hits.length
-                : totalHits - [...prevState.images, ...hits].length,
+                : totalHits - [...prevImages, ...hits].length,
           }));
 
           this.setState({ loading: false });
@@ -63,7 +67,7 @@ class App extends Component {
         <Searchbar onSubmit={this.handleFormSubmit} />
         {error && <h1>{error}</h1>}
         {images && <ImageGallery images={images} />}
-        {!!totalHits && <Button onCLick={this.handleLoadMore} />}
+        {totalHits > 0 && <Button onCLick={this.handleLoadMore} />}
         {loading && <Loader />}
         <ToastContainer
           autoClose={2000}

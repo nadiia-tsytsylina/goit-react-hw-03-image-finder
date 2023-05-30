@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { toast } from 'react-toastify';
 import { TbPhotoSearch } from 'react-icons/tb';
@@ -14,12 +15,14 @@ class Searchbar extends Component {
   };
 
   handleSubmit = event => {
+    const imageName = this.state.imageName;
+
     event.preventDefault();
-    if (this.state.imageName.trim() === '') {
+    if (imageName.trim() === '') {
       toast.error('Please input tag for searching images');
       return;
     }
-    this.props.onSubmit(this.state.imageName);
+    this.props.onSubmit(imageName);
     this.reset();
   };
 
@@ -52,3 +55,7 @@ class Searchbar extends Component {
 }
 
 export default Searchbar;
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
