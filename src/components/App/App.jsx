@@ -14,8 +14,7 @@ class App extends Component {
     loading: false,
     images: null,
     page: 1,
-    totalHits: 0,
-    error: '',
+    loadMore: false,
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -31,17 +30,13 @@ class App extends Component {
         const { totalHits, hits } = await fetchImages(imageName, page);
 
         if (totalHits === 0) {
-          this.setState({ totalHits: 0 });
           toast.error(`There are no images with tag ${imageName}`);
-          this.setState({ loading: false });
+          this.setState({ loading: false, loadMore: false });
           return;
         } else {
           this.setState(prevState => ({
             images: page === 1 ? hits : [...prevImages, ...hits],
-            totalHits:
-              page === 1
-                ? totalHits - hits.length
-                : totalHits - [...prevImages, ...hits].length,
+            loadMore: page < Math.ceil(totalHits / 12),
           }));
 
           this.setState({ loading: false });
@@ -61,13 +56,12 @@ class App extends Component {
   };
 
   render() {
-    const { loading, images, error, totalHits } = this.state;
+    const { loading, images, loadMore } = this.state;
     return (
       <div className={css.App}>
         <Searchbar onSubmit={this.handleFormSubmit} />
-        {error && <h1>{error}</h1>}
         {images && <ImageGallery images={images} />}
-        {totalHits > 0 && <Button onCLick={this.handleLoadMore} />}
+        {loadMore && <Button onCLick={this.handleLoadMore} />}
         {loading && <Loader />}
         <ToastContainer
           autoClose={2000}
