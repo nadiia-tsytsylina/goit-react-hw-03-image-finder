@@ -11,10 +11,10 @@ import css from './App.module.css';
 class App extends Component {
   state = {
     imageName: '',
-    loading: false,
+    isLoading: false,
     images: null,
     page: 1,
-    loadMore: false,
+    isShowLoadMore: false,
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -25,21 +25,21 @@ class App extends Component {
 
     if (prevImageName !== imageName || prevPage !== page) {
       try {
-        this.setState({ loading: true });
+        this.setState({ isLoading: true });
 
         const { totalHits, hits } = await fetchImages(imageName, page);
 
         if (totalHits === 0) {
           toast.error(`There are no images with tag ${imageName}`);
-          this.setState({ loading: false, loadMore: false });
+          this.setState({ isLoading: false, isShowLoadMore: false });
           return;
         } else {
           this.setState(prevState => ({
             images: page === 1 ? hits : [...prevImages, ...hits],
-            loadMore: page < Math.ceil(totalHits / 12),
+            isShowLoadMore: page < Math.ceil(totalHits / 12),
           }));
 
-          this.setState({ loading: false });
+          this.setState({ isLoading: false });
         }
       } catch (error) {
         toast.error(`${error}`);
@@ -56,13 +56,13 @@ class App extends Component {
   };
 
   render() {
-    const { loading, images, loadMore } = this.state;
+    const { isLoading, images, isShowLoadMore } = this.state;
     return (
       <div className={css.App}>
         <Searchbar onSubmit={this.handleFormSubmit} />
         {images && <ImageGallery images={images} />}
-        {loadMore && <Button onCLick={this.handleLoadMore} />}
-        {loading && <Loader />}
+        {isShowLoadMore && <Button onCLick={this.handleLoadMore} />}
+        {isLoading && <Loader />}
         <ToastContainer
           autoClose={2000}
           position="bottom-right"
