@@ -48,7 +48,9 @@ class App extends Component {
   }
 
   handleFormSubmit = imageName => {
-    this.setState({ imageName, page: 1, images: null });
+    if (imageName !== this.state.imageName) {
+      this.setState({ imageName, page: 1, images: null });
+    }
   };
 
   handleLoadMore = () => {
